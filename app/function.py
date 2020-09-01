@@ -107,7 +107,6 @@ def getTweetBySearch(userid, s, since, until, cnt, api, posts2):
                post["select"] = "検索"
                posts2.append(post)
                db = get_db()
-               print(db)
                db.execute("INSERT INTO tweet (id,created_at,user_id,text,fav,retweet,action) values(?,?,?,?,?,?,?)", (userid,post["created_at"],post["user_id"],post["text"], post["fav"],post["retweet"],post["select"]))
                db.commit()
                close_db()
