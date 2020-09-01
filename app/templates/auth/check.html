@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ユーザー登録</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css";; rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+    <!-- [if lt IE 9]>
+           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>;;
+           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>;;
+    <![endif]-->
+    <style>
+    body{
+     background-color:#e6ecf0;
+    }
+    div{
+     line-height: 1.2;
+    }
+    .white-container{
+     border-bottom: 1px solid #e6ecf0;
+     padding:20px;
+     background-color:#ffffff;
+    }
+    #tweet-text{
+     padding:20px;
+     margin-bottom:10px;
+     line-height: 1.2;
+    }
+    .hh1{
+     color: #007bff !important;
+    }
+    .clearText {
+      text-indent:100%;
+      white-space:nowrap;
+      overflow:hidden;
+    }
+    </style>
+</head>
+
+<body>
+  <div class="container">
+   <div class="row">
+     <div class="col-md-12">
+       <h1 class="hh1"> <a href="{{url_for('auth.index')}}">Tweetliker</a></h1>
+        <p class="lead">こちらで登録しますか</p>
+        <form class="form-horizontal" action = "{{url_for('auth.login2')}}" method="post">
+          {% if username,password,cs,ck,at,ats %}
+          <input type="hidden" name="username" value={{username}} id="username" />
+          <input type="hidden" name="password" value={{password}} id="password" />
+          <input type="hidden" name="ck" value={{ck}} id="ck"  />
+          <input type="hidden" name="cs" value={{cs}} id="cs" />
+          <input type="hidden" name="at" value={{at}} id="at" />
+          <input type="hidden" name="ats" value={{ats}} id="ats" />
+
+          <div class="form-group">
+              <span class="input-group-addon">USERNAME</span>
+              <p class="text-center" id="username" name="username" type="text">{{username}}</p>
+            </div>
+            <div class="form-group">
+                 <span class="input-group-addon">PASSWORD</span>
+                 <p class="clearText" id="password" name="password" type="hidden">{{password}}</p>
+           </div>
+           <div class="form-group">
+                <span class="input-group-addon">CONSUMER_KEY</span>
+                <p class="text-center" id="ck" name="ck" type="text">{{cs}}</p>
+          </div>
+          <div class="form-group">
+               <span class="input-group-addon">CONSUMER_SECRET</span>
+               <p class="text-center" id="cs" name="cs" type="text">{{ck}}</p>
+         </div>
+         <div class="form-group">
+              <span class="input-group-addon">ACCESS_TOKEN</span>
+              <p class="text-center" id="at" name="at" type="text">{{at}}</p>
+          </div>
+          <div class="form-group">
+               <span class="input-group-addon">ACCESS_SECRET</span>
+               <p class="text-center" id="ats" name="ats" type="text">{{ats}}</p>
+           </div>
+           <div class="form-group">
+             <button type="submit" class="btn btn-default" name="button"　id="1">ユーザー登録</button>
+           </div>
+          {% endif %}
+        </form>
+        <form class="form-horizontal" action = "{{url_for('auth.login3')}}" method="post">
+          <div class="form-group">
+            <button type="submit" class="btn btn-default" name="button" value="api" id="1">編集する</button>
+          </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
