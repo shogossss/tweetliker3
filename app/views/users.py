@@ -1,9 +1,9 @@
 from flask import(
-Blueprint,render_template,request
+Blueprint,render_template,request,session,redirect, url_for,
 )
 import tweepy,time
 from app.userdb import get_db,close_db
-from app.function import like_tweepy,get_sorted_df,get_grouped_df,get_profile,retweet_tweepy,follow_tweepy,like_tweepy,getTweetBySearch
+from app.function import like_tweepy,get_sorted_df,get_grouped_df,get_profile,retweet_tweepy,follow_tweepy,like_tweepy,getTweetBySearch,sessget
 from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
@@ -34,50 +34,11 @@ def tweet():
                 'auth/login.html',
                 message2=error_message
                 )
-            # d.execute("select id,username,password from user")
-            # for d1 in d:
-            #     pass1.append(str(d1["password"]))
-            #     user1.append(str(d1["username"]))
-            #     if(str(d1["username"])==username):
-            #         global id
-            #         id = d1["id"]
-
-            d.execute('select id,ck,cs,at,ats from api')
-            for d2 in d:
-                if(d2["id"]==user["id"]):
-                        ck = str(d2["ck"])
-                        cs = str(d2["cs"])
-                        at = str(d2["at"])
-                        ats = str(d2["ats"])
-            global id
-            id = user["id"]
-            #tweepy
-            auth = tweepy.OAuthHandler(ck, cs)
-            auth.set_access_token(at, ats)
-                #APIインスタンスを作成
-            global api
-            api = tweepy.API(auth)
+            session["user_id"] = user["id"]
+            session["username"] = user["username"]
             db.commit()
             close_db()
-            # エラーがなければ、セッションにユーザーIDを追加してインデックスページへ遷移
-            # session.clear()
-            # session['user_id'] = user['id']
-            # flash('{}さんとしてログインしました'.format(username), category='alert alert-info')
-            return render_template('tweet/index.html',
-            query = "?",
-            count = "?"
-            )
-            # # index.html をレンダリングする
-            # return render_template('tweet/index.html',
-            # query = "?",
-            # count = "?"
-            # )
-            # else :
-            #     message2='パスワードかusernameが間違っております'
-            #     return render_template(
-            #     'auth/login.html',
-            #     message2=message2
-            #     )
+            return redirect(url_for('auth.index'))
 
         except Exception as e:
             print(e)
@@ -95,7 +56,8 @@ def tweetaction():
        query = request.form['query']# formのname = "query"を取得
        cnt = int(request.form['count'])
        button = request.form['button']
-       userid=id
+       userid = session["user_id"]
+       api = sessget(userid)
        posts = []
        try:
            if button == "like":
@@ -141,8 +103,9 @@ def search_tweet2():
        button = request.form['button']
        startdate = request.form['startdate']
        enddate = request.form['enddate']
-       userid=id
        posts2 = []
+       userid = session["user_id"]
+       api = sessget(userid)
        try:
            if button == "search":
                posts2 = getTweetBySearch(userid, query, startdate, enddate, cnt, api, posts2)
@@ -173,9 +136,11 @@ def logcheck():
     c = db.cursor()
     datas=[]
     c.execute("select * from tweet")
+    userid = session["user_id"]
+    # print(userid)
     for d3 in c:
         data = {}
-        if(d3["id"]==id):
+        if(d3["id"] == userid):
             data["created_at"] = str(d3["created_at"])
             data["text"] = str(d3["text"])
             data["user_id"] = str(d3["user_id"])
@@ -259,6 +224,8 @@ def anary3():
        return render_template('tweet/anary.html')
 
 def get_tweets_df(user_id):
+   userid = session["user_id"]
+   api = sessget(userid)
    tweets_df = pd.DataFrame(columns=columns) #1
    for tweet in tweepy.Cursor(api.user_timeline,screen_name = user_id, exclude_replies = True).items(): #2
        try:
@@ -279,6 +246,8 @@ def get_tweets_df(user_id):
    return tweets_df #7
 
 def get_profile(user_id):
+   userid = session["user_id"]
+   api = sessget(userid)
    user = api.get_user(screen_name= user_id) #1
    profile = { #2
        "id": user.id,

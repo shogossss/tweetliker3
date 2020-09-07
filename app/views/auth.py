@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from app.service import auth_service
 import tweepy,time
 from app.userdb import get_db,close_db
@@ -12,7 +12,19 @@ auth = Blueprint('auth', __name__)
 @auth.route('/')
 # @login_required
 def index():
-    return render_template('auth/login.html')
+    if 'username' in session:
+        return render_template('tweet/index.html',
+            query = "?",
+            count = "?"
+            )
+    else:
+        return render_template('auth/login.html')
+
+@auth.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.pop('username', None)
+    session.pop('user_id', None)
+    return redirect(url_for('auth.index'))
 
 # signupページと、postするページを共通化。
 @auth.route('/signup', methods=['GET', 'POST'])
@@ -39,7 +51,7 @@ def login():
             return render_template('auth.login')
         flash('ログインしました。')
         return redirect(url_for('index'))
-
+    
 @auth.route('/create_user', methods = ["GET","POST"])
 def create_user():
     return render_template('auth/create_user.html')
@@ -80,7 +92,6 @@ def login2():
             db = get_db()
             username = request.form['username']
             password = request.form['password']
-            print(password)
             CONSUMER_KEY  = request.form['ck']
             CONSUMER_SECRET = request.form['cs']
             ACCESS_TOKEN = request.form['at']

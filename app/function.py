@@ -3,6 +3,22 @@ Blueprint,render_template,request
 )
 import tweepy,time
 from app.userdb import get_db,close_db
+import tweepy,time
+
+def sessget(userid):
+    db = get_db()
+    d = db.cursor()
+    d.execute('select id,ck,cs,at,ats from api')
+    for d2 in d:
+        if(d2["id"] == userid):
+            ck = str(d2["ck"])
+            cs = str(d2["cs"])
+            at = str(d2["at"])
+            ats = str(d2["ats"])
+    auth = tweepy.OAuthHandler(ck, cs)
+    auth.set_access_token(at, ats)
+    api = tweepy.API(auth)
+    return api
 
 def like_tweepy(userid,query,cnt,api,posts):
     search_results = api.search(q=query, count=cnt)
